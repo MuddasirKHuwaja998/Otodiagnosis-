@@ -36,7 +36,7 @@ Follow these steps to set up the project locally:
 
 1. Clone the repository:
    ```bash
-   git clone https://github.com/YourUsername/DiseaseDiagnosis.git
+   
    cd DiseaseDiagnosis
    ```
 
@@ -89,5 +89,5 @@ This project is open-source and available under the [MIT License](LICENSE).
 
 ## Contact
 For questions or support, please reach out to:
-- **Name**: Muddasir K Huwaja
-- **Email**: example@example.com
+- **Name**: Muddasir Khuwaja
+- **Email**: engr.muddasir01@gmail.com
