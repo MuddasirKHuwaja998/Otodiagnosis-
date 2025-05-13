@@ -2,6 +2,7 @@ import os
 import random
 import json
 import base64
+import requests  # Add this for downloading the model
 from flask import Flask, render_template, request
 from tensorflow.keras.models import load_model
 from tensorflow.keras.preprocessing import image
@@ -13,11 +14,23 @@ app = Flask(__name__)
 # Dynamically resolve the base directory
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 
+# Dropbox link for the model file
+DROPBOX_LINK = "https://www.dropbox.com/scl/fi/f4exykvmziiksl26sa1ej/final_model.h5?rlkey=wjjxrj62plzunsic1r7c2zunl&st=lq6zi8fp&dl=1"
+
 # Dynamically set the model path
 MODEL_PATH = os.path.join(BASE_DIR, "saved_model", "final_model.h5")
-print(f"Resolved MODEL_PATH: {MODEL_PATH}")
+
+# Download the model file if it doesn't exist locally
 if not os.path.exists(MODEL_PATH):
-    raise FileNotFoundError(f"Model file not found at {MODEL_PATH}. Ensure the file exists.")
+    print(f"Model file not found at {MODEL_PATH}. Downloading from Dropbox...")
+    os.makedirs(os.path.dirname(MODEL_PATH), exist_ok=True)
+    response = requests.get(DROPBOX_LINK, stream=True)
+    if response.status_code == 200:
+        with open(MODEL_PATH, "wb") as f:
+            f.write(response.content)
+        print("Model downloaded successfully.")
+    else:
+        raise Exception(f"Failed to download the model. Status code: {response.status_code}")
 
 # Load the model
 model = load_model(MODEL_PATH)
