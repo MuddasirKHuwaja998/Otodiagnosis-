@@ -18,24 +18,24 @@ logging.getLogger("tensorflow").setLevel(logging.ERROR)  # Suppress TensorFlow l
 app = Flask(__name__)
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 
-# Dropbox link for the model file
+# Persistent path for the model
+PERSISTENT_MODEL_PATH = "/var/model/final_model.h5"  # Persistent storage path
 DROPBOX_LINK = "https://www.dropbox.com/scl/fi/f4exykvmziiksl26sa1ej/final_model.h5?rlkey=wjjxrj62plzunsic1r7c2zunl&st=lq6zi8fp&dl=1"
-MODEL_PATH = os.path.join(BASE_DIR, "saved_model", "final_model.h5")
 
-# Download the model if not found
-if not os.path.exists(MODEL_PATH):
-    print(f"Model file not found at {MODEL_PATH}. Downloading from Dropbox...")
-    os.makedirs(os.path.dirname(MODEL_PATH), exist_ok=True)
+# Check if the model exists in persistent storage
+if not os.path.exists(PERSISTENT_MODEL_PATH):
+    print(f"Model not found at {PERSISTENT_MODEL_PATH}. Downloading...")
+    os.makedirs(os.path.dirname(PERSISTENT_MODEL_PATH), exist_ok=True)
     response = requests.get(DROPBOX_LINK, stream=True)
     if response.status_code == 200:
-        with open(MODEL_PATH, "wb") as f:
+        with open(PERSISTENT_MODEL_PATH, "wb") as f:
             f.write(response.content)
         print("Model downloaded successfully.")
     else:
         raise Exception(f"Failed to download the model. Status code: {response.status_code}")
 
-# Load the model
-model = load_model(MODEL_PATH)
+# Load the model from persistent storage
+model = load_model(PERSISTENT_MODEL_PATH)
 
 # Define class names
 class_names = [
