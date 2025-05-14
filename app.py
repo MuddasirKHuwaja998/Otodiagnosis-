@@ -11,7 +11,9 @@ from io import BytesIO
 from PIL import Image
 
 # Suppress TensorFlow warnings
-os.environ["TF_CPP_MIN_LOG_LEVEL"] = "2"
+os.environ["TF_CPP_MIN_LOG_LEVEL"] = "2"  # Suppresses INFO and WARNING logs from TensorFlow
+import logging
+logging.getLogger("tensorflow").setLevel(logging.ERROR)  # Suppress TensorFlow logs from appearing
 
 app = Flask(__name__)
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
