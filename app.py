@@ -2,7 +2,6 @@ import os
 import random
 import json
 import base64
-import requests
 from flask import Flask, render_template, request
 from tensorflow.keras.models import load_model
 from tensorflow.keras.preprocessing import image
@@ -11,30 +10,20 @@ from io import BytesIO
 from PIL import Image
 
 # Suppress TensorFlow warnings
-os.environ["TF_CPP_MIN_LOG_LEVEL"] = "2"  # Suppresses INFO and WARNING logs from TensorFlow
-import logging
-logging.getLogger("tensorflow").setLevel(logging.ERROR)  # Suppress TensorFlow logs from appearing
+os.environ["TF_CPP_MIN_LOG_LEVEL"] = "2"
 
 app = Flask(__name__)
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 
-# Temporary path for the model
-TEMP_MODEL_PATH = "/tmp/final_model.h5"  # Writable directory in Render's environment
-DROPBOX_LINK = "https://www.dropbox.com/scl/fi/f4exykvmziiksl26sa1ej/final_model.h5?rlkey=wjjxrj62plzunsic1r7c2zunl&st=lq6zi8fp&dl=1"
+# Updated model path
+MODEL_PATH = os.path.join(BASE_DIR, "saved_model", "final_model.h5")
 
-# Check if the model exists in the temporary directory
-if not os.path.exists(TEMP_MODEL_PATH):
-    print(f"Model not found at {TEMP_MODEL_PATH}. Downloading...")
-    response = requests.get(DROPBOX_LINK, stream=True)
-    if response.status_code == 200:
-        with open(TEMP_MODEL_PATH, "wb") as f:
-            f.write(response.content)
-        print("Model downloaded successfully.")
-    else:
-        raise Exception(f"Failed to download the model. Status code: {response.status_code}")
+# Ensure the model file exists
+if not os.path.exists(MODEL_PATH):
+    raise FileNotFoundError(f"Model file not found at {MODEL_PATH}. Ensure the file exists in the correct path.")
 
-# Load the model from the temporary directory
-model = load_model(TEMP_MODEL_PATH)
+# Load the model
+model = load_model(MODEL_PATH)
 
 # Define class names
 class_names = [
